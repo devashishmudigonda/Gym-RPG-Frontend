@@ -1,7 +1,7 @@
 :root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #f5f7fb;
-  background: #0b1020;
+  font-family: Inter, system-ui, sans-serif;
+  color: #f4f7ff;
+  background: #081120;
 }
 
 * {
@@ -11,9 +11,9 @@
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(116, 79, 255, 0.24), transparent 35%),
-    radial-gradient(circle at top right, rgba(42, 210, 201, 0.2), transparent 30%),
-    #0b1020;
+    radial-gradient(circle at top left, rgba(129, 91, 255, 0.28), transparent 28%),
+    radial-gradient(circle at top right, rgba(0, 225, 255, 0.18), transparent 25%),
+    linear-gradient(180deg, #081120, #0c1628);
   min-height: 100vh;
 }
 
@@ -22,60 +22,56 @@ body {
 }
 
 .app-shell {
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 28px;
+  padding: 24px;
 }
 
 .hero {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  align-items: flex-start;
-  margin-bottom: 24px;
-  padding: 24px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 12px;
-  color: #92a0d7;
-  margin: 0 0 10px;
+  padding: 28px;
+  border-radius: 28px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(16px);
+  margin-bottom: 22px;
 }
 
 .hero h1 {
   margin: 0;
-  font-size: 42px;
+  font-size: 46px;
 }
 
-.hero-text {
-  margin-top: 12px;
-  max-width: 760px;
-  color: #d4dbff;
-  line-height: 1.6;
+.eyebrow {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8fa0ff;
+  margin-bottom: 10px;
+  font-size: 12px;
 }
 
-.hero-status {
-  min-width: 280px;
+.hero-text,
+.helper-text,
+.coverage-line,
+.exercise-item p,
+.catalog-item p,
+.mission p {
+  color: #cfd9ff;
+}
+
+.status-pill,
+button {
+  background: linear-gradient(135deg, #6e7cff, #25d5cc);
 }
 
 .status-pill {
   display: inline-block;
-  padding: 10px 14px;
+  padding: 10px 16px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #6f7cff, #33d1c6);
   font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.status-message {
-  color: #d5daf3;
-  line-height: 1.5;
+  margin-bottom: 8px;
 }
 
 .grid {
@@ -89,100 +85,113 @@ body {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 22px;
+  background: rgba(255,255,255,0.055);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
   padding: 20px;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(12px);
 }
 
-.card-header {
+.card-head {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
-.card-header h2 {
+.card-head h2 {
   margin: 0;
   font-size: 22px;
 }
 
-.level-chip {
-  padding: 8px 14px;
+.level-chip,
+.badge-pill {
   border-radius: 999px;
-  background: rgba(110, 124, 255, 0.2);
-  border: 1px solid rgba(110, 124, 255, 0.4);
-  color: #dbe0ff;
-  font-weight: 700;
+  padding: 8px 14px;
 }
 
-.form-grid {
+.level-chip {
+  background: rgba(110,124,255,0.18);
+  border: 1px solid rgba(110,124,255,0.35);
+}
+
+.badges-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.badge-pill {
+  background: rgba(37,213,204,0.12);
+  border: 1px solid rgba(37,213,204,0.35);
+}
+
+.form-grid,
+.exercise-list,
+.catalog-list {
   display: grid;
   gap: 12px;
 }
 
-.inline-form {
+.inline-form,
+.action-row {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
+}
+
+.action-row.vertical {
+  flex-direction: column;
 }
 
 input,
 select,
 button {
   width: 100%;
+  padding: 14px 16px;
   border-radius: 14px;
   border: none;
-  padding: 14px 16px;
   font-size: 15px;
 }
 
 input,
 select {
-  background: rgba(255, 255, 255, 0.08);
-  color: #f5f7fb;
-  outline: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-input::placeholder {
-  color: #b5bfdc;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  outline: 1px solid rgba(255,255,255,0.08);
 }
 
 button {
+  color: white;
   cursor: pointer;
   font-weight: 700;
-  background: linear-gradient(135deg, #6f7cff, #33d1c6);
-  color: white;
-  transition: transform 0.15s ease;
 }
 
-button:hover {
-  transform: translateY(-1px);
+button.ghost {
+  background: rgba(255,255,255,0.12);
 }
 
-.helper-text {
-  color: #bfc7e7;
-  margin: 10px 0 0;
+button.danger {
+  background: linear-gradient(135deg, #ff5f7a, #ff8b5f);
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
   gap: 14px;
 }
 
-.stat-box {
-  background: rgba(255, 255, 255, 0.045);
-  border-radius: 18px;
+.stat {
+  background: rgba(255,255,255,0.05);
   padding: 16px;
+  border-radius: 18px;
 }
 
 .stat-label {
-  color: #adb7dc;
-  font-size: 14px;
+  color: #aebce8;
   margin-bottom: 8px;
+  font-size: 14px;
 }
 
 .stat-value {
@@ -190,52 +199,69 @@ button:hover {
   font-weight: 800;
 }
 
-.badges-wrap {
+.mission {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 18px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border-radius: 16px;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,0.05);
 }
 
-.badge-pill {
-  padding: 9px 12px;
-  border-radius: 999px;
-  background: rgba(51, 209, 198, 0.14);
-  border: 1px solid rgba(51, 209, 198, 0.35);
-  color: #cbfff7;
-  font-size: 14px;
-  font-weight: 600;
+.mission.done {
+  background: rgba(37,213,204,0.14);
+  border: 1px solid rgba(37,213,204,0.3);
 }
 
 .result-box,
-.selected-exercise-box {
-  margin-top: 16px;
+.custom-add-box {
   padding: 14px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255,255,255,0.05);
 }
 
-.exercise-list {
-  display: grid;
-  gap: 12px;
-}
-
+.catalog-item,
 .exercise-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  text-align: left;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.exercise-item p {
-  margin: 4px 0 0;
-  color: #bac3e2;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.05);
 }
 
 .exercise-item.active {
-  outline: 2px solid rgba(51, 209, 198, 0.6);
-  background: rgba(51, 209, 198, 0.12);
+  outline: 2px solid rgba(37,213,204,0.5);
+}
+
+.edit-stack {
+  width: 100%;
+  display: grid;
+  gap: 10px;
+}
+
+.body-map {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.body-part {
+  padding: 12px;
+  border-radius: 14px;
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+  color: #cbd5ff;
+}
+
+.body-part.active {
+  background: rgba(110,124,255,0.22);
+  border: 1px solid rgba(110,124,255,0.38);
+  color: white;
+  font-weight: 700;
 }
 
 .chart-box {
@@ -252,20 +278,10 @@ table {
   border-collapse: collapse;
 }
 
-th,
-td {
+th, td {
   padding: 14px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   text-align: left;
-}
-
-th {
-  color: #aeb8db;
-  font-size: 14px;
-}
-
-td {
-  color: #eef1ff;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 @media (max-width: 900px) {
@@ -278,6 +294,12 @@ td {
   }
 
   .app-shell {
-    padding: 18px;
+    padding: 16px;
   }
+}
+
+.session-box {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.05);
 }
