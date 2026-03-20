@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import "./App.css";
 
-const API_BASE = "http://127.0.0.1:3000";
+const API_BASE = "https://gym-rpg.onrender.com";
 
 async function apiGet(path) {
   const res = await fetch(`${API_BASE}${path}`);
