@@ -15,41 +15,74 @@ import "./App.css";
 import { AuthProvider, useAuth } from "./AuthContext";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
+import Leaderboard from "./Leaderboard";
 
 const API_BASE = "https://gym-rpg.onrender.com";
-// const API_BASE = "http://0.0.0.0:3000";
+// const API_BASE = "http://localhost:3000";
 
 async function apiGet(path, token) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: token
-      ? {
-          Authorization: `Bearer ${token}`,
-        }
-      : {},
-  });
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : {},
+    });
 
-  const data = await res.json();
-  if (!res.ok || data.success === false) {
-    throw new Error(data.message || "Request failed");
+    if (!res.ok) {
+      throw new Error(`Server returned ${res.status}: ${res.statusText}`);
+    }
+
+    const text = await res.text();
+    if (!text) {
+      throw new Error("Empty response from server");
+    }
+
+    const data = JSON.parse(text);
+    if (data.success === false) {
+      throw new Error(data.message || "Request failed");
+    }
+    return data;
+  } catch (err) {
+    if (err instanceof SyntaxError) {
+      throw new Error("Invalid JSON response from server");
+    }
+    throw err;
   }
-  return data;
 }
 
 async function apiPost(path, body = {}, token) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify(body),
-  });
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(body),
+    });
 
-  const data = await res.json();
-  if (!res.ok || data.success === false) {
-    throw new Error(data.message || "Request failed");
+    if (!res.ok) {
+      throw new Error(`Server returned ${res.status}: ${res.statusText}`);
+    }
+
+    const text = await res.text();
+    if (!text) {
+      throw new Error("Empty response from server");
+    }
+
+    const data = JSON.parse(text);
+    if (data.success === false) {
+      throw new Error(data.message || "Request failed");
+    }
+    return data;
+  } catch (err) {
+    if (err instanceof SyntaxError) {
+      throw new Error("Invalid JSON response from server");
+    }
+    throw err;
   }
-  return data;
 }
 
 function Card({ title, children, right }) {
@@ -564,6 +597,8 @@ function MainApp() {
               ))}
             </div>
           </Card>
+
+          <Leaderboard token={token} />
 
           <div className="grid two">
             <Card title="Workout Session">
