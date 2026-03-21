@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useAuth } from "../AuthContext";
 
-// const API_BASE = "https://gym-rpg.onrender.com";
-const API_BASE = "http://0.0.0.0:3000";
+const API_BASE = "https://gym-rpg.onrender.com";
+// const API_BASE = "http://0.0.0.0:3000";
 
 async function apiGet(path, token) {
   try {
