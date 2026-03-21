@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-// const API_BASE = "http://localhost:3000";
 const API_BASE = "https://gym-rpg.onrender.com";
+// const API_BASE = "http://localhost:3000";
 
 async function apiGet(path, token) {
   try {
@@ -44,10 +44,14 @@ export default function Leaderboard({ token }) {
     setLoading(true);
     setError("");
 
+    console.log("Loading leaderboard with token:", token);
+
     try {
       const res = await apiGet("/leaderboard", token);
+      console.log("Leaderboard response:", res);
       setLeaderboard(res.data || []);
     } catch (err) {
+      console.error("Leaderboard error:", err);
       setError(err.message);
     } finally {
       setLoading(false);

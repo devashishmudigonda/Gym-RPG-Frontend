@@ -367,3 +367,46 @@ th, td {
   border-radius: 16px;
   background: rgba(255,255,255,0.05);
 }
+.catalog-item button {
+  width: auto;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 60px;
+}
+
+.nav-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 22px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  align-items: center;
+}
+
+.nav-bar a {
+  color: #f4f7ff;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.nav-bar a:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.nav-bar a.active {
+  background: rgba(129, 91, 255, 0.3);
+  color: #fff;
+}
+
+.nav-bar button {
+  margin-left: auto;
+  width: auto;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 80px;
+}
