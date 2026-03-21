@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
 
-const API_BASE = "https://gym-rpg.onrender.com/";
+const API_BASE = "https://gym-rpg.onrender.com";
 
 export default function LoginPage() {
   const { login } = useAuth();
