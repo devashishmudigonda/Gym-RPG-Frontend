@@ -18,6 +18,9 @@ export default function ExercisesPage() {
     catalogSearch,
     setCatalogSearch,
     filteredCatalog,
+    loading,
+    error,
+    message,
   } = useGym();
 
   return (
@@ -26,9 +29,7 @@ export default function ExercisesPage() {
         <div>
           <div className="eyebrow">Gym RPG</div>
           <h1>Browse Exercises</h1>
-          <p className="hero-text">
-            Discover exercises in our catalog.
-          </p>
+          <p className="hero-text">Discover exercises in our catalog.</p>
         </div>
 
         <div className="hero-status">
