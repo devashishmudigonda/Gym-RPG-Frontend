@@ -16,8 +16,8 @@ import { AuthProvider, useAuth } from "./AuthContext";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 
-// const API_BASE = "https://gym-rpg.onrender.com";
-const API_BASE = "http://0.0.0.0:3000";
+const API_BASE = "https://gym-rpg.onrender.com";
+// const API_BASE = "http://0.0.0.0:3000";
 
 async function apiGet(path, token) {
   const res = await fetch(`${API_BASE}${path}`, {
