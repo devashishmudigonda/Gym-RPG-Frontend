@@ -12,11 +12,22 @@ import {
   Legend,
 } from "recharts";
 import "./App.css";
+import { AuthProvider, useAuth } from "./AuthContext";
+import LoginPage from "./LoginPage";
+import RegisterPage from "./RegisterPage";
 
-const API_BASE = "https://gym-rpg.onrender.com";
+// const API_BASE = "https://gym-rpg.onrender.com";
+const API_BASE = "http://0.0.0.0:3000";
 
-async function apiGet(path) {
-  const res = await fetch(`${API_BASE}${path}`);
+async function apiGet(path, token) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : {},
+  });
+
   const data = await res.json();
   if (!res.ok || data.success === false) {
     throw new Error(data.message || "Request failed");
@@ -24,12 +35,16 @@ async function apiGet(path) {
   return data;
 }
 
-async function apiPost(path, body = {}) {
+async function apiPost(path, body = {}, token) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: JSON.stringify(body),
   });
+
   const data = await res.json();
   if (!res.ok || data.success === false) {
     throw new Error(data.message || "Request failed");
@@ -86,15 +101,66 @@ function BodyMap({ covered = [] }) {
   );
 }
 
-export default function App() {
-  const [profileForm, setProfileForm] = useState({
-    name: "",
-    age: "",
-    body_weight: "",
-  });
-  const [profileIdInput, setProfileIdInput] = useState("1");
+function AuthGate() {
+  const { token } = useAuth();
+  const [mode, setMode] = useState("login");
 
-  const [profile, setProfile] = useState(null);
+  if (!token) {
+    return (
+      <div className="app-shell">
+        <header className="hero premium">
+          <div>
+            <div className="eyebrow">Gym RPG</div>
+            <h1>Train. Progress. Level Up.</h1>
+            <p className="hero-text">
+              Sign in to access your own dashboard, workout history, streaks,
+              progress graphs, and exercise tracking.
+            </p>
+          </div>
+        </header>
+
+        <div className="grid two">
+          <Card title="Authentication">
+            <div className="action-row">
+              <button
+                type="button"
+                onClick={() => setMode("login")}
+                className={mode === "login" ? "" : "ghost"}
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("register")}
+                className={mode === "register" ? "" : "ghost"}
+              >
+                Register
+              </button>
+            </div>
+
+            <div style={{ marginTop: "16px" }}>
+              {mode === "login" ? <LoginPage /> : <RegisterPage />}
+            </div>
+          </Card>
+
+          <Card title="Why this changed">
+            <p className="helper-text">
+              Every account now sees only its own profile, workout history,
+              exercises, and missions.
+            </p>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return <MainApp />;
+}
+
+function MainApp() {
+  const { token, profile: authProfile, setProfile, logout } = useAuth();
+
+  const [profile, setProfileState] = useState(authProfile || null);
   const [dashboard, setDashboard] = useState(null);
   const [missions, setMissions] = useState(null);
   const [todayCoverage, setTodayCoverage] = useState(null);
@@ -135,8 +201,6 @@ export default function App() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const activeProfileId = profile?.id || null;
-
   const filteredCatalog = useMemo(() => {
     return catalog.filter((item) =>
       `${item.name} ${item.muscle_group}`
@@ -151,9 +215,9 @@ export default function App() {
     );
   }, [exercises, selectedExerciseId]);
 
-  async function loadActiveWorkout(profileId) {
+  async function loadActiveWorkout() {
     try {
-      const res = await apiGet(`/workouts/active/${profileId}`);
+      const res = await apiGet("/me/workouts/active", token);
       setActiveWorkout(res.data || null);
     } catch (err) {
       setError(err.message);
@@ -164,15 +228,15 @@ export default function App() {
     if (!exerciseId) return;
 
     const [historyRes, graphRes] = await Promise.all([
-      apiGet(`/exercises/${exerciseId}/history`),
-      apiGet(`/exercises/${exerciseId}/graph`),
+      apiGet(`/me/exercises/${exerciseId}/history`, token),
+      apiGet(`/me/exercises/${exerciseId}/graph`, token),
     ]);
 
     setHistory(historyRes.data || []);
     setGraphData(graphRes.data || []);
   }
 
-  async function refreshAll(profileId) {
+  async function refreshAll() {
     const [
       profileRes,
       dashboardRes,
@@ -182,15 +246,16 @@ export default function App() {
       weekCoverageRes,
       catalogRes,
     ] = await Promise.all([
-      apiGet(`/profiles/${profileId}`),
-      apiGet(`/profiles/${profileId}/dashboard`),
-      apiGet(`/profiles/${profileId}/exercises`),
-      apiGet(`/profiles/${profileId}/missions`),
-      apiGet(`/profiles/${profileId}/coverage/today`),
-      apiGet(`/profiles/${profileId}/coverage/week`),
-      apiGet(`/catalog/exercises`),
+      apiGet("/me/profile", token),
+      apiGet("/me/dashboard", token),
+      apiGet("/me/exercises", token),
+      apiGet("/me/missions", token),
+      apiGet("/me/coverage/today", token),
+      apiGet("/me/coverage/week", token),
+      apiGet("/catalog/exercises", token),
     ]);
 
+    setProfileState(profileRes.data);
     setProfile(profileRes.data);
     setDashboard(dashboardRes.data);
     setExercises(exercisesRes.data || []);
@@ -211,65 +276,16 @@ export default function App() {
       setGraphData([]);
     }
 
-    await loadActiveWorkout(profileId);
-  }
-
-  async function handleCreateProfile(e) {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await apiPost("/profiles", {
-        name: profileForm.name,
-        age: Number(profileForm.age),
-        body_weight: Number(profileForm.body_weight),
-      });
-
-      setProfileIdInput(String(res.data.id));
-      setProfileForm({ name: "", age: "", body_weight: "" });
-
-      await refreshAll(res.data.id);
-      setMessage("Profile created");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleLoadProfile(e) {
-    e.preventDefault();
-    if (!profileIdInput) return;
-
-    setLoading(true);
-    setError("");
-
-    try {
-      await refreshAll(profileIdInput);
-      setMessage(`Profile ${profileIdInput} loaded`);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    await loadActiveWorkout();
   }
 
   async function handleStartWorkout() {
-    if (!activeProfileId) {
-      setError("Create or load a profile first.");
-      return;
-    }
-
     setLoading(true);
     setError("");
 
     try {
-      await apiPost("/workouts/start", {
-        profile_id: Number(activeProfileId),
-      });
-
-      await loadActiveWorkout(activeProfileId);
+      await apiPost("/workouts/start", { profile_id: 0 }, token);
+      await loadActiveWorkout();
       setMessage("Workout started");
     } catch (err) {
       setError(err.message);
@@ -285,9 +301,9 @@ export default function App() {
     setError("");
 
     try {
-      await apiPost(`/workouts/end/${activeWorkout.session.id}`);
+      await apiPost(`/workouts/end/${activeWorkout.session.id}`, {}, token);
       setActiveWorkout(null);
-      await refreshAll(activeProfileId);
+      await refreshAll();
       setMessage("Workout ended");
     } catch (err) {
       setError(err.message);
@@ -299,24 +315,23 @@ export default function App() {
   async function handleAddExercise(e) {
     e.preventDefault();
 
-    if (!activeProfileId) {
-      setError("Create or load a profile first.");
-      return;
-    }
-
     setLoading(true);
     setError("");
 
     try {
-      const res = await apiPost("/exercises", {
-        profile_id: Number(activeProfileId),
-        name: exerciseForm.name,
-        muscle_group: exerciseForm.muscle_group,
-      });
+      const res = await apiPost(
+        "/exercises",
+        {
+          profile_id: 0,
+          name: exerciseForm.name,
+          muscle_group: exerciseForm.muscle_group,
+        },
+        token
+      );
 
       setExerciseForm({ name: "", muscle_group: "" });
       setSelectedExerciseId(String(res.data.id));
-      await refreshAll(activeProfileId);
+      await refreshAll();
       await loadExerciseDetails(res.data.id);
       setMessage("Exercise added");
     } catch (err) {
@@ -327,23 +342,22 @@ export default function App() {
   }
 
   async function handleUseCatalogExercise(item) {
-    if (!activeProfileId) {
-      setError("Create or load a profile first.");
-      return;
-    }
-
     setLoading(true);
     setError("");
 
     try {
-      const res = await apiPost("/exercises", {
-        profile_id: Number(activeProfileId),
-        name: item.name,
-        muscle_group: item.muscle_group,
-      });
+      const res = await apiPost(
+        "/exercises",
+        {
+          profile_id: 0,
+          name: item.name,
+          muscle_group: item.muscle_group,
+        },
+        token
+      );
 
       setSelectedExerciseId(String(res.data.id));
-      await refreshAll(activeProfileId);
+      await refreshAll();
       await loadExerciseDetails(res.data.id);
       setMessage(`${item.name} added from catalog`);
     } catch (err) {
@@ -356,11 +370,6 @@ export default function App() {
   async function handleLogWorkout(e) {
     e.preventDefault();
 
-    if (!activeProfileId) {
-      setError("Create or load a profile first.");
-      return;
-    }
-
     if (!activeWorkout?.session?.id) {
       setError("Start a workout first.");
       return;
@@ -370,13 +379,17 @@ export default function App() {
     setError("");
 
     try {
-      const res = await apiPost("/workouts/log", {
-        profile_id: Number(activeProfileId),
-        exercise_id: Number(workoutForm.exercise_id),
-        session_id: Number(activeWorkout.session.id),
-        weight: Number(workoutForm.weight),
-        reps: Number(workoutForm.reps),
-      });
+      const res = await apiPost(
+        "/workouts/log",
+        {
+          profile_id: 0,
+          exercise_id: Number(workoutForm.exercise_id),
+          session_id: Number(activeWorkout.session.id),
+          weight: Number(workoutForm.weight),
+          reps: Number(workoutForm.reps),
+        },
+        token
+      );
 
       setLastWorkoutResult(res.data);
       setWorkoutForm((prev) => ({
@@ -385,9 +398,9 @@ export default function App() {
         reps: "",
       }));
 
-      await refreshAll(activeProfileId);
+      await refreshAll();
       await loadExerciseDetails(workoutForm.exercise_id);
-      await loadActiveWorkout(activeProfileId);
+      await loadActiveWorkout();
 
       setMessage("Workout logged");
     } catch (err) {
@@ -398,13 +411,11 @@ export default function App() {
   }
 
   async function handleDeleteExercise(id) {
-    if (!activeProfileId) return;
-
     setLoading(true);
     setError("");
 
     try {
-      await apiPost(`/exercises/${id}/delete`);
+      await apiPost(`/exercises/${id}/delete`, {}, token);
 
       if (String(selectedExerciseId) === String(id)) {
         setSelectedExerciseId("");
@@ -412,7 +423,7 @@ export default function App() {
         setGraphData([]);
       }
 
-      await refreshAll(activeProfileId);
+      await refreshAll();
       setMessage("Exercise deleted");
     } catch (err) {
       setError(err.message);
@@ -426,10 +437,10 @@ export default function App() {
     setError("");
 
     try {
-      await apiPost(`/exercises/${id}`, editExerciseForm);
+      await apiPost(`/exercises/${id}`, editExerciseForm, token);
       setEditingExerciseId(null);
 
-      await refreshAll(activeProfileId);
+      await refreshAll();
       if (selectedExerciseId) {
         await loadExerciseDetails(selectedExerciseId);
       }
@@ -447,17 +458,14 @@ export default function App() {
     setError("");
 
     try {
-      await apiPost(`/workouts/${id}/delete`);
-      await refreshAll(activeProfileId);
+      await apiPost(`/workouts/${id}/delete`, {}, token);
+      await refreshAll();
 
       if (selectedExerciseId) {
         await loadExerciseDetails(selectedExerciseId);
       }
 
-      if (activeProfileId) {
-        await loadActiveWorkout(activeProfileId);
-      }
-
+      await loadActiveWorkout();
       setMessage("Workout deleted");
     } catch (err) {
       setError(err.message);
@@ -471,22 +479,23 @@ export default function App() {
     setError("");
 
     try {
-      await apiPost(`/workouts/${id}`, {
-        weight: Number(editWorkoutForm.weight),
-        reps: Number(editWorkoutForm.reps),
-      });
+      await apiPost(
+        `/workouts/${id}`,
+        {
+          weight: Number(editWorkoutForm.weight),
+          reps: Number(editWorkoutForm.reps),
+        },
+        token
+      );
 
       setEditingWorkoutId(null);
-      await refreshAll(activeProfileId);
+      await refreshAll();
 
       if (selectedExerciseId) {
         await loadExerciseDetails(selectedExerciseId);
       }
 
-      if (activeProfileId) {
-        await loadActiveWorkout(activeProfileId);
-      }
-
+      await loadActiveWorkout();
       setMessage("Workout updated");
     } catch (err) {
       setError(err.message);
@@ -496,10 +505,17 @@ export default function App() {
   }
 
   useEffect(() => {
-    apiGet("/catalog/exercises")
-      .then((res) => setCatalog(res.data || []))
-      .catch(() => {});
-  }, []);
+    if (!token) return;
+
+    setLoading(true);
+    setError("");
+
+    refreshAll()
+      .then(() => setMessage("Profile loaded"))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   return (
     <div className="app-shell">
@@ -516,54 +532,13 @@ export default function App() {
         <div className="hero-status">
           <div className="status-pill">{loading ? "Syncing..." : "Online"}</div>
           <div className="status-message">{error ? error : message}</div>
+          <div style={{ marginTop: "12px" }}>
+            <button type="button" className="danger" onClick={logout}>
+              Logout
+            </button>
+          </div>
         </div>
       </header>
-
-      <div className="grid two">
-        <Card title="Create Profile">
-          <form className="form-grid" onSubmit={handleCreateProfile}>
-            <input
-              placeholder="Name"
-              value={profileForm.name}
-              onChange={(e) =>
-                setProfileForm({ ...profileForm, name: e.target.value })
-              }
-              required
-            />
-            <input
-              type="number"
-              placeholder="Age"
-              value={profileForm.age}
-              onChange={(e) =>
-                setProfileForm({ ...profileForm, age: e.target.value })
-              }
-              required
-            />
-            <input
-              type="number"
-              step="0.1"
-              placeholder="Body Weight"
-              value={profileForm.body_weight}
-              onChange={(e) =>
-                setProfileForm({ ...profileForm, body_weight: e.target.value })
-              }
-              required
-            />
-            <button type="submit">Create Profile</button>
-          </form>
-        </Card>
-
-        <Card title="Load Profile">
-          <form className="inline-form" onSubmit={handleLoadProfile}>
-            <input
-              value={profileIdInput}
-              onChange={(e) => setProfileIdInput(e.target.value)}
-              placeholder="Profile ID"
-            />
-            <button type="submit">Load</button>
-          </form>
-        </Card>
-      </div>
 
       {profile && dashboard && (
         <>
@@ -656,7 +631,10 @@ export default function App() {
           <div className="grid two">
             <Card title="Weekly Missions">
               {missions?.weekly_missions?.map((m) => (
-                <div className={m.completed ? "mission done" : "mission"} key={m.name}>
+                <div
+                  className={m.completed ? "mission done" : "mission"}
+                  key={m.name}
+                >
                   <div>
                     <strong>{m.name}</strong>
                     <p>{m.description}</p>
@@ -806,7 +784,10 @@ export default function App() {
                           }
                         />
                         <div className="action-row">
-                          <button onClick={() => handleSaveExerciseEdit(exercise.id)}>
+                          <button
+                            type="button"
+                            onClick={() => handleSaveExerciseEdit(exercise.id)}
+                          >
                             Save
                           </button>
                           <button
@@ -1060,5 +1041,13 @@ export default function App() {
         </>
       )}
     </div>
+  );
+}
+
+export default function AppRoot() {
+  return (
+    <AuthProvider>
+      <AuthGate />
+    </AuthProvider>
   );
 }
