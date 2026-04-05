@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useAuth } from "../AuthContext";
 
-const API_BASE = "https://gym-rpg.onrender.com";
-// const API_BASE = "http://0.0.0.0:3000";
+const API_BASE = import.meta.env.DEV ? "http://0.0.0.0:3000" : "https://gym-rpg.onrender.com";
 
 async function apiGet(path, token) {
   try {
@@ -110,6 +109,13 @@ export function GymProvider({ children }) {
   });
 
   const [activeWorkout, setActiveWorkout] = useState(null);
+
+  const now = new Date();
+  const [calendarData, setCalendarData] = useState(null);
+  const [calendarYear, setCalendarYear] = useState(now.getFullYear());
+  const [calendarMonth, setCalendarMonth] = useState(now.getMonth() + 1);
+  const [heatmapData, setHeatmapData] = useState([]);
+  const [workoutNote, setWorkoutNote] = useState("");
 
   const [message, setMessage] = useState("Ready");
   const [error, setError] = useState("");
@@ -438,6 +444,43 @@ export function GymProvider({ children }) {
     }
   }
 
+  async function loadCalendarMonth(year, month) {
+    try {
+      const res = await apiGet(`/me/calendar/${year}/${month}`, token);
+      setCalendarData(res.data || null);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function loadHeatmap(year) {
+    try {
+      const res = await apiGet(`/me/calendar/heatmap/${year}`, token);
+      setHeatmapData(res.data || []);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function saveWorkoutNote(date, note) {
+    try {
+      await apiPost("/me/calendar/note", { date, note }, token);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function loadWorkoutNote(date) {
+    try {
+      const res = await apiGet(`/me/calendar/note/${date}`, token);
+      setWorkoutNote(res.data?.note || "");
+      return res.data;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    }
+  }
+
   useEffect(() => {
     if (!token) return;
 
@@ -445,7 +488,12 @@ export function GymProvider({ children }) {
     setError("");
 
     refreshAll()
-      .then(() => setMessage("Profile loaded"))
+      .then(() => {
+        setMessage("Profile loaded");
+        const n = new Date();
+        loadCalendarMonth(n.getFullYear(), n.getMonth() + 1);
+        loadHeatmap(n.getFullYear());
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -495,6 +543,18 @@ export function GymProvider({ children }) {
     handleSaveExerciseEdit,
     handleDeleteWorkout,
     handleSaveWorkoutEdit,
+    calendarData,
+    calendarYear,
+    setCalendarYear,
+    calendarMonth,
+    setCalendarMonth,
+    heatmapData,
+    workoutNote,
+    setWorkoutNote,
+    loadCalendarMonth,
+    loadHeatmap,
+    saveWorkoutNote,
+    loadWorkoutNote,
   };
 
   return <GymContext.Provider value={value}>{children}</GymContext.Provider>;

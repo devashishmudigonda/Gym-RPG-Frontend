@@ -7,9 +7,9 @@ import RegisterPage from "./RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import WorkoutPage from "./pages/WorkoutPage";
 import ExercisesPage from "./pages/ExercisesPage";
+import CalendarPage from "./pages/CalendarPage";
 
-const API_BASE = "https://gym-rpg.onrender.com";
-// const API_BASE = "http://0.0.0.0:3000";
+const API_BASE = import.meta.env.DEV ? "http://0.0.0.0:3000" : "https://gym-rpg.onrender.com";
 
 async function apiGet(path, token) {
   try {
@@ -194,6 +194,9 @@ function AuthGate() {
           <NavLink to="/workout" className={({ isActive }) => (isActive ? "active" : "")}>
             Workout
           </NavLink>
+          <NavLink to="/calendar" className={({ isActive }) => (isActive ? "active" : "")}>
+            Calendar
+          </NavLink>
           <NavLink to="/exercises" className={({ isActive }) => (isActive ? "active" : "")}>
             Exercises
           </NavLink>
@@ -204,6 +207,7 @@ function AuthGate() {
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/workout" element={<WorkoutPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/exercises" element={<ExercisesPage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
