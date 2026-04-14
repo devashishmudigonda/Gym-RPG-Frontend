@@ -8,8 +8,7 @@ import DashboardPage from "./pages/DashboardPage";
 import WorkoutPage from "./pages/WorkoutPage";
 import ExercisesPage from "./pages/ExercisesPage";
 
-const API_BASE = "https://gym-rpg.onrender.com";
-// const API_BASE = "http://0.0.0.0:3000";
+const API_BASE = import.meta.env.VITE_API_URL || "https://gym-rpg.onrender.com";
 
 async function apiGet(path, token) {
   try {
