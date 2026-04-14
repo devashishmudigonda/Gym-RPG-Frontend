@@ -111,7 +111,7 @@ export function GymProvider({ children }) {
     setGraphData(graphRes.data || []);
   }
 
-  async function refreshAll() {
+  async function refreshAll(preferredExerciseId = null) {
     // allSettled so one failing endpoint never breaks the rest
     const [
       profileRes,
@@ -164,6 +164,7 @@ export function GymProvider({ children }) {
     if (firstFail) throw firstFail.reason;
 
     const firstExerciseId =
+      preferredExerciseId ||
       selectedExerciseId ||
       (exercisesRes.data?.length ? String(exercisesRes.data[0].id) : "");
 
@@ -241,7 +242,7 @@ export function GymProvider({ children }) {
       );
       setSelectedExerciseId(String(res.data.id));
       setWorkoutForm((prev) => ({ ...prev, exercise_id: String(res.data.id) }));
-      await refreshAll();
+      await refreshAll(res.data.id);
       await loadExerciseDetails(res.data.id);
       setMessage("Exercise added");
       return res.data;
@@ -282,7 +283,7 @@ export function GymProvider({ children }) {
       );
       setSelectedExerciseId(String(res.data.id));
       setWorkoutForm((prev) => ({ ...prev, exercise_id: String(res.data.id) }));
-      await refreshAll();
+      await refreshAll(res.data.id);
       await loadExerciseDetails(res.data.id);
       setMessage(`${item.name} added`);
     } catch (err) {
