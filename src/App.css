@@ -715,6 +715,254 @@ th { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-
 
 .form-grid { display: grid; gap: 10px; }
 
+/* ═══════════════════════════════════════════════════════════════
+   EXERCISES PAGE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Exercise cards grid */
+.exercise-cards { display: grid; gap: 10px; }
+.exercise-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.exercise-card.added { opacity: 0.6; }
+
+.exercise-card-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.exercise-card-name { font-size: 14px; font-weight: 600; color: #f1f5f9; }
+.exercise-card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.tag.muscle    { background: var(--primary-dim); color: #c4b5fd; border: 1px solid var(--primary-glow); }
+.tag.equipment { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(34,211,238,0.25); }
+.tag.secondary { background: var(--surface); color: var(--text-muted); border: 1px solid var(--border); }
+
+.exercise-card-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.added-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+  white-space: nowrap;
+}
+
+/* Add exercise form panel */
+.add-form-panel {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.add-exercise-form { display: grid; gap: 12px; }
+
+/* Form layout helpers */
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.field-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.form-row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Pill toggle buttons */
+.pill-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill-btn {
+  width: auto;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.pill-btn:hover:not(:disabled) { border-color: var(--primary-glow); color: var(--text); }
+.pill-btn.active {
+  background: var(--primary-dim);
+  border-color: var(--primary-glow);
+  color: #c4b5fd;
+}
+
+/* Edit stack inside exercise card */
+.edit-stack { display: grid; gap: 8px; width: 100%; }
+.action-row { display: flex; gap: 8px; }
+.action-row button { flex: 1; padding: 8px 12px; font-size: 13px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   PICKER — CREATE NEW EXERCISE SECTION
+   ═══════════════════════════════════════════════════════════════ */
+.picker-create-prompt {
+  padding: 16px 0 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+.picker-create-btn {
+  width: auto;
+  padding: 10px 20px;
+  font-size: 14px;
+  background: var(--primary-dim);
+  border: 1px solid var(--primary-glow);
+  color: #c4b5fd;
+  border-radius: var(--radius);
+}
+.picker-create-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.picker-create-form { padding-top: 8px; display: grid; gap: 12px; }
+.picker-create-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 4px;
+}
+.picker-create-submit {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, var(--primary), #4c1d95);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SESSION LOG — GROUPED BY EXERCISE
+   ═══════════════════════════════════════════════════════════════ */
+.session-groups { display: grid; gap: 10px; }
+
+.session-exercise-group {
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.session-exercise-group.is-selected {
+  border-color: var(--primary-glow);
+  background: linear-gradient(135deg, var(--surface-2), rgba(124,92,252,0.08));
+}
+
+.session-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  cursor: pointer;
+  gap: 12px;
+  transition: background 0.1s;
+}
+.session-group-header:hover { background: rgba(255,255,255,0.03); }
+
+.session-group-meta { display: flex; align-items: baseline; gap: 8px; min-width: 0; flex-wrap: wrap; }
+.session-group-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.session-group-vol { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+.session-group-hint { font-size: 11px; color: var(--text-dim); }
+
+.session-sets-list {
+  border-top: 1px solid var(--border-light);
+  padding: 6px 0;
+}
+.session-set-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+}
+.session-set-row:not(:last-child) { border-bottom: 1px solid var(--border-light); }
+
+.set-num    { width: 46px; font-size: 11px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
+.set-weight { font-weight: 700; color: #f1f5f9; min-width: 56px; }
+.set-reps   { font-weight: 600; color: var(--text); }
+.set-vol    { margin-left: auto; font-size: 12px; color: var(--text-dim); background: var(--surface); padding: 2px 8px; border-radius: 999px; }
+
+/* Inline set edit */
+.set-edit-input {
+  width: 70px;
+  padding: 5px 8px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary-glow);
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+}
+.set-action-btn {
+  width: auto;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  margin-left: auto;
+}
+.set-action-btn.edit  { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); }
+.set-action-btn.edit:hover:not(:disabled)  { border-color: var(--primary-glow); color: var(--text); }
+.set-action-btn.save  { background: var(--green-dim); border: 1px solid rgba(16,185,129,0.3); color: var(--green); }
+.set-action-btn.cancel { background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); }
+
+/* ── Superset styles ─────────────────────────────────────────── */
+.superset-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--amber-dim);
+  border: 1px solid rgba(245,158,11,0.3);
+  color: var(--amber);
+}
+.superset-badge-sm {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--amber-dim);
+  color: var(--amber);
+}
+
+.log-set-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.ss-link-btn { color: var(--amber) !important; border-color: rgba(245,158,11,0.3) !important; }
+.ss-link-btn:hover:not(:disabled) { background: var(--amber-dim) !important; }
+
+.superset-partner-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0 12px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 12px;
+}
+.superset-partner-label { font-size: 12px; color: var(--text-muted); }
+.superset-switch-btn {
+  width: auto;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--amber-dim);
+  border: 1px solid rgba(245,158,11,0.3);
+  color: var(--amber);
+  border-radius: var(--radius-sm);
+}
+
+.log-set-set-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 700px) {
   .app-shell { padding: 14px 16px 40px; }
@@ -727,4 +975,7 @@ th { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-
   .log-set-form .log-btn { grid-column: 1 / -1; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .picker-sheet { max-height: 90vh; }
+  .form-row-two { grid-template-columns: 1fr; }
+  .log-set-actions { flex-wrap: wrap; }
+  .session-group-hint { display: none; }
 }

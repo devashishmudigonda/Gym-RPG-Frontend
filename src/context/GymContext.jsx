@@ -266,7 +266,7 @@ export function GymProvider({ children }) {
       setSelectedExerciseId(String(existing.id));
       setWorkoutForm((prev) => ({ ...prev, exercise_id: String(existing.id) }));
       setLoading(false);
-      return;
+      return existing;
     }
 
     try {
@@ -283,11 +283,13 @@ export function GymProvider({ children }) {
       );
       setSelectedExerciseId(String(res.data.id));
       setWorkoutForm((prev) => ({ ...prev, exercise_id: String(res.data.id) }));
-      await refreshAll(res.data.id);
+      await refreshAll();
       await loadExerciseDetails(res.data.id);
       setMessage(`${item.name} added`);
+      return res.data;
     } catch (err) {
       setError(err.message);
+      return null;
     } finally {
       setLoading(false);
     }
